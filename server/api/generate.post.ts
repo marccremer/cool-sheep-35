@@ -13,6 +13,7 @@ import {
   coerce,
   transform,
   array,
+  Input,
 } from "valibot"; // 1.2 kB
 
 declare global {
@@ -57,7 +58,7 @@ const exampleProject: Project = {
 };
 
 // Beispiel Festangestellte
-const festangestellte: Festangestellter[] = [
+const festangestellte = [
   {
     id: "1",
     lohn_monat: 3000,
@@ -73,7 +74,7 @@ const festangestellte: Festangestellter[] = [
     job: { job_title: "Backend Developer", multiplier: 1.3 },
   },
 ];
-const freelancer: Freelancer[] = [
+const freelancer = [
   {
     id: "1",
     lohn_stunde: 50,
@@ -328,8 +329,12 @@ const GeneratorRequestSchema = object({
     "Eine Liste von Festangestellten wird benötigt"
   ),
   project: ProjectSchema,
-  target_date: transform(DateSchema, (i) => i.toTemporalInstant()),
+  target_date: transform(
+    coerce(date("Target date wird benötigt"), (i) => new Date(i)),
+    (i) => i.toTemporalInstant()
+  ),
 });
+type IProjectSchema = Input<typeof ProjectSchema>; // { email: string; password: string }
 
 export default defineEventHandler(async (event) => {
   const { festangestellte, freelancer, project, target_date } =
