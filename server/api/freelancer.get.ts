@@ -85,6 +85,7 @@ const jobs = [
   { job_title: "UI/UX Designer", multiplier: 2.3 },
 ];
 
-export default defineEventHandler(() => {
+export default defineEventHandler(async (e) => {
+  const query = getQuery(e);
   return freelancer;
 });
