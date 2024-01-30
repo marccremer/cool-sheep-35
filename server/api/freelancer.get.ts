@@ -1,9 +1,6 @@
 /// <reference lib="deno.unstable" />
 import {
-  email,
-  minLength,
   object,
-  Output,
   parse,
   string,
   date,
@@ -15,9 +12,7 @@ import {
   optional,
   array,
   Input,
-  getDefault,
 } from "valibot";
-const kv = await Deno.openKv();
 import { randomNumber } from "https://deno.land/x/random_number/mod.ts";
 import { randFullName } from "npm:@ngneat/falso";
 
