@@ -1,3 +1,76 @@
+/// <reference lib="deno.unstable" />
+import {
+  email,
+  minLength,
+  object,
+  Output,
+  parse,
+  string,
+  date,
+  literal,
+  number,
+  union,
+  coerce,
+  transform,
+  optional,
+  array,
+  Input,
+  getDefault,
+} from "valibot";
+const kv = await Deno.openKv();
+import { randomNumber } from "https://deno.land/x/random_number/mod.ts";
+import { randFullName } from "npm:@ngneat/falso";
+
+const status = union([literal("created"), literal("running")]);
+const NumberSchema = coerce(number(), Number);
+const DateSchema = coerce(date(), (i) => new Date(i));
+
+const ProjectSchema = object(
+  {
+    id: string(),
+    estimated_hours: NumberSchema,
+    budget: NumberSchema,
+    start_date: transform(DateSchema, (i) => i.toTemporalInstant()),
+    status: status,
+  },
+  "Ein Project wird benötigt"
+);
+const JobSchema = object({
+  jobTitle: string(),
+  multiplier: NumberSchema,
+});
+const FestangestellteSchema = object({
+  id: string(),
+  lohnStunde: NumberSchema,
+  stundenMonat: NumberSchema,
+  name: string(),
+  job: JobSchema,
+});
+const FreelancerSchema = object({
+  id: string(),
+  lohnStunde: NumberSchema,
+  stundenMonat: NumberSchema,
+  name: string(),
+  job: JobSchema,
+});
+
+const GeneratorRequestSchema = object({
+  freelancer: array(
+    FreelancerSchema,
+    "Eine Liste von Freelancer wird benötigt"
+  ),
+  festangestellte: array(
+    FestangestellteSchema,
+    "Eine Liste von Festangestellten wird benötigt"
+  ),
+  project: ProjectSchema,
+  target_date: transform(
+    coerce(date("Target date wird benötigt"), (i) => new Date(i)),
+    (i) => i.toTemporalInstant()
+  ),
+});
+type IFreelancerSchema = Input<typeof FreelancerSchema>;
+
 const freelancer = [
   {
     id: "0",
@@ -160,11 +233,30 @@ const jobs = [
   { jobTitle: "AI Researcher", multiplier: 2.5 },
   { jobTitle: "DevOps Engineer", multiplier: 2.0 },
   { jobTitle: "UI/UX Designer", multiplier: 2.3 },
-  { jobTitle: "Backend Developer", multiplier: 1.8},
-  { jobTitle: "Senior Backend Developer", multiplier: 3.3},
+  { jobTitle: "Backend Developer", multiplier: 1.8 },
+  { jobTitle: "Senior Backend Developer", multiplier: 3.3 },
 ];
 
-export default defineEventHandler(async (e) => {
+function* getFreeLancer(range = 50) {
+  let i = 0;
+  const jobsSize = jobs.length - 1;
+  while (i < range) {
+    const job = jobs[i % jobsSize];
+    const lohnStunde = randomNumber({ min: 50, max: 200 });
+    const stundenMonat = randomNumber({ min: 10, max: 45 }) * 4;
+
+    yield {
+      id: crypto.randomUUID(),
+      job,
+      lohnStunde,
+      name: randFullName(),
+      stundenMonat,
+    };
+  }
+}
+const limitSchema = optional(number(), () => 50);
+export default defineEventHandler((e) => {
   const query = getQuery(e);
-  return freelancer;
+  const limit = parse(limitSchema, query.limit);
+  return [...getFreeLancer(limit)];
 });

@@ -12,7 +12,8 @@
     "nuxt": "npm:nuxt@3.9.1"
   },
   "dependencies": {
-    "valibot": "npm:valibot@0.25.0",
-    "@js-temporal/polyfill": "npm:@js-temporal/polyfill@0.4.4"
+    "@js-temporal/polyfill": "npm:@js-temporal/polyfill@0.4.4",
+    "@ngneat/falso": "^7.1.1",
+    "valibot": "npm:valibot@0.25.0"
   }
 }
