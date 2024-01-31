@@ -14,7 +14,7 @@ import {
   Input,
 } from "valibot";
 import { randomNumber } from "https://deno.land/x/random_number/mod.ts";
-import { randFullName } from "npm:@ngneat/falso";
+import { randFullName } from "@ngneat/falso";
 
 const status = union([literal("created"), literal("running")]);
 const NumberSchema = coerce(number(), Number);
