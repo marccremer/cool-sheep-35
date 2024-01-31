@@ -252,6 +252,9 @@ function* getFreeLancer(range = 50) {
 const limitSchema = optional(number(), () => 50);
 export default defineEventHandler((e) => {
   const query = getQuery(e);
-  const limit = parse(limitSchema, query.limit);
-  return [...getFreeLancer(limit)];
+  if (query.random) {
+    const limit = parse(limitSchema, query.limit);
+    return [...getFreeLancer(limit)];
+  }
+  return freelancer;
 });
