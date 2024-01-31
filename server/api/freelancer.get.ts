@@ -239,7 +239,7 @@ function* getFreeLancer(range = 50) {
     const job = jobs[i % jobsSize];
     const lohnStunde = randomNumber({ min: 50, max: 200 });
     const stundenMonat = randomNumber({ min: 10, max: 45 }) * 4;
-
+    i += 1;
     yield {
       id: crypto.randomUUID(),
       job,
